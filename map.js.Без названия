@@ -1,0 +1,179 @@
+jQuery(function($) {
+    if (!window.app) {
+        window.app = {};
+    }
+
+    var config = {
+        startView: [50.4487677, 30.5158682],
+        startZoom: 16,
+        form: 'https://docs.google.com/forms/d/e/1FAIpQLSfXgNXdxu2aqnt_QVa4zQHbObm95BOsSwtVB-vN2wyLgVovDQ/viewform?usp=pp_url&entry.2102711374={uid}',
+        fields: ['activity', 'like', 'dislike'],
+        successMessage: 'Анкету збережено. Це вікно можна закрити.',
+    };
+
+    if (window.location.hash !== '#step2') {
+        window.location = config.form.replace('{uid}', app.uid);
+        return;
+    }
+
+    var map, markerPopup, activeMarker,
+        $save = $('.save'),
+        storage = new app.Storage(app.uid),
+        markers = [];
+
+    storage.on('saved', function(saved) {
+        if (saved) {
+            document.getElementById('saving-status').style.display = 'inline-block';
+            $('.saving-status').text('Ваші відмітки збережено').prop('disabled', false);
+        } else {
+            document.getElementById('saving-status').style.display = 'inline-block';
+            $('.saving-status').text('Зберігаємо відмітку…').prop('disabled', true);
+        }
+    });
+
+    $('.add-marker').click(function() {
+        addMarker(map.getCenter());
+    });
+
+    $save.click(function() {
+        save(true);
+    });
+    $(document).on('submit', '.marker-tooltip-form', onTooltipFormSubmit);
+    $(document).on('click', '.delete-marker', onDeleteMarkerClick);
+
+    initMap();
+
+    if (map) {
+        loadSavedMarkers();
+    }
+
+    function initMap() {
+        map = L.map('map').setView(config.startView, config.startZoom);
+        
+        if (!map) {
+            alert('Не получилось загрузить карту, пожалуйста попробуйте еще раз.');
+            return;
+        }
+
+        var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        map.on('click', function(event) {
+            if (activeMarker && activeMarker.__temporary) {
+                activeMarker.__deleted = true;
+                activeMarker.remove();
+            }
+
+            addMarker(event.latlng);
+        });
+
+        // Popup
+        markerPopup = L.popup().setContent($('#markerPopupTemplate').html());
+
+        markerPopup.on('popupclose', function() {
+            if (activeMarker && activeMarker.__temporary) {
+                activeMarker.__deleted = true;
+                activeMarker.remove();
+            }
+        });
+    }
+
+    function loadSavedMarkers() {
+        var savedMarkers = storage.load().markers;
+
+        savedMarkers.forEach(function(item) {
+            var marker = L.marker([item.lat, item.lng], { draggable: true }).addTo(map);
+            marker.__formData = item.formData;
+
+            marker.on('dragend', onMarkerMove);
+            marker.on('click', onMarkerClick);
+            markers.push(marker);
+        });
+    }
+
+    function onMarkerMove() {
+        markerPopup.removeFrom(map);
+        save();
+    }
+
+    function onMarkerClick() {
+        var marker = this;
+
+        if (activeMarker && activeMarker.__temporary) {
+            activeMarker.__deleted = true;
+            activeMarker.remove();
+        }
+
+        activeMarker = marker;
+        openInfoWindow(marker);
+    }
+
+    function onTooltipFormSubmit(e) {
+        var $form = $(e.target),
+            data = {};
+
+        e.preventDefault();
+
+        $form.serializeArray().forEach(function(item) {
+            data[item.name] = item.value;
+        });
+
+        activeMarker.__formData = data;
+        activeMarker.__temporary = false;
+
+        markerPopup.removeFrom(map);
+        save();
+    }
+
+    function onDeleteMarkerClick(e) {
+        e.preventDefault();
+
+        if (activeMarker) {
+            activeMarker.__deleted = true;
+            activeMarker.remove();
+            save();
+        }
+
+        markerPopup.removeFrom(map);
+    }
+
+    function addMarker(position) {
+        if (!map) {
+            return;
+        }
+
+        var marker = L.marker(position, { draggable: true }).addTo(map);
+        marker.__temporary = true;
+
+        marker.on('dragend', onMarkerMove);
+        marker.on('click', onMarkerClick);
+        markers.push(marker);
+        activeMarker = marker;
+        openInfoWindow(marker);
+    }
+
+    function openInfoWindow(marker) {
+        var $form,
+            data = marker.__formData || {};
+
+        var latlng = marker.getLatLng();
+        markerPopup.setLatLng(latlng).openOn(map);
+        $form = $('.marker-tooltip-form');
+
+        config.fields.forEach(function(name) {
+            $form.find('input[name=' + (name) + ']').val(data[name] || '');
+        });
+    }
+
+    function save(buttonPressed) {
+        storage.save({
+            markers: markers
+        }, function() {
+            if (buttonPressed) {
+                //window.location = config.form.replace('{uid}', app.uid);
+                alert(config.successMessage);
+            }
+        });
+    }
+});

@@ -1,0 +1,186 @@
+@font-face {
+    font-family: 'proba_nav2';
+    src: url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-regular-webfont.eot');
+    src: url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-regular-webfont.woff2') format('woff2'),
+         url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-regular-webfont.woff') format('woff'),
+         url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-regular-webfont.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'proba_nav2';
+    src: url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-semibold-webfont.eot');
+    src: url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-semibold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-semibold-webfont.woff2') format('woff2'),
+         url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-semibold-webfont.woff') format('woff'),
+         url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-semibold-webfont.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'proba_nav2';
+    src: url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-bold-webfont.eot');
+    src: url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-bold-webfont.woff2') format('woff2'),
+         url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-bold-webfont.woff') format('woff'),
+         url('https://cdn.a3.kyiv.ua/ProbaNav2.1/probanav2-bold-webfont.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+
+html,body,p,div{
+    margin: 0;
+    padding: 0;
+}
+
+
+html,
+body,
+.map {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'proba_nav2';
+    font-weight: 400;
+}
+
+.save,
+.add-marker {
+    z-index: 1000;
+/*    font-size: 16px;
+    font-family: 'proba_nav2';
+    border-radius: 4px;
+    border: 1px solid #444;*/
+}
+
+.buttons-block {
+    float: right;
+    margin: 15px 25px 15px 0px;
+}
+
+.saving-status{
+    display: none;
+    margin: 7px 0 0 0;
+    font-size: 11px;
+    color: #27A550;
+    width: 100%;
+    text-align: right;    
+}
+
+.pin{
+    margin: 13px 0px 15px 25px;
+    width: 18px;
+    float: left;
+
+}
+
+.helper-content {
+    margin: 15px 0px 15px 5px;
+    max-width: 700px;
+    float: left;
+}
+
+.helper-header {
+    font-size: 16px;
+    margin: 0 0 5px 0;
+    padding: 0;
+}
+
+.helper-text{
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 125%;
+    color: #C7C7C7;
+}
+
+.save {
+
+}
+
+.add-marker {
+    margin-right: 10px;
+}
+
+.place-comment {
+    display: block;
+    margin-bottom: 15px;
+}
+
+.place-comment p {
+    margin: 0;
+    padding: 0;
+}
+
+.place-comment input {
+    width: 100%;
+    box-sizing: border-box;
+    height: 30px;
+}
+
+.tooltip-footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.tooltip-footer .delete-marker {
+    color: #c0c0c0;
+    cursor: pointer;
+}
+
+.tooltip-footer .submit {
+
+}
+
+.marker-tooltip-form{
+    font-family: 'proba_nav2';
+}
+
+
+.helper {
+    width: 100%;
+    /*height: 40px;*/
+    background: #2C2C2C;
+    color: #fff;
+    font-size: 15px;
+    /*padding: 15px 15px 10px 15px;*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 900;
+    letter-spacing: .02rem;
+}
+
+.btn{
+    font-family: 'proba_nav2';
+    background-color: #fff;
+    letter-spacing: 0.02rem;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: .3rem .75rem .25rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.btn-success {
+    color: #fff;
+    background-color: #0EC269;
+    border-color: #0EC269;
+}
+
+@media {
+    
+}

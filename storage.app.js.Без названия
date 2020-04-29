@@ -1,0 +1,101 @@
+jQuery(function($) {
+    if (!window.app) {
+        window.app = {};
+    }
+
+    app.Storage = Storage;
+
+    function Storage() {
+        this.subscribers = [];
+        this.unsavedChanges = null;
+        this.isBusy = false;
+    }
+
+    Storage.prototype.save = function(params, cb) {
+        var transformedMarkers,
+            that = this;
+
+        // If saving in progress - store current value, until it's finished
+        if (this.isBusy) {
+            this.unsavedChanges = params;
+            return;
+        }
+
+        this.isBusy = true;
+        this.trigger('saved', false);
+
+        transformedMarkers = params.markers
+            .map(function(marker) {
+                if (marker.__deleted || marker.__temporary) {
+                    return null;
+                }
+
+                var position = marker.getLatLng();
+
+                return {
+                    lng: position.lng,
+                    lat: position.lat,
+                    formData: marker.__formData
+                }
+            })
+            .filter(function(marker) {
+                return !!marker;
+            });
+
+        if (window.localStorage) {
+            localStorage.setItem('markers', JSON.stringify(transformedMarkers));
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: 'save.php',
+            data: JSON.stringify({
+                uid: app.uid,
+                markers: transformedMarkers
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+        })
+            .done(function() {
+                that.trigger('saved', true);
+
+                if (typeof cb === 'function') {
+                    cb();
+                }
+            })
+            .always(function() {
+                that.isBusy = false;
+
+                if (that.unsavedChanges) {
+                    setTimeout(function() {
+                        that.save(that.unsavedChanges);
+                        that.unsavedChanges = null;
+                    }, 1000);
+                }
+            });
+    };
+
+    Storage.prototype.load = function() {
+        return {
+            markers: window.localStorage && window.localStorage.markers ? JSON.parse(localStorage.markers) : []
+        };
+    };
+
+    // Pub / sub
+    Storage.prototype.on = function(event, callback) {
+        this.subscribers.push({
+            event: event.toLowerCase(),
+            callback: callback
+        });
+    };
+
+    Storage.prototype.trigger = function(event, value) {
+        event = event.toLowerCase();
+
+        this.subscribers.forEach(function(item) {
+            if (item.event === event) {
+                item.callback(value);
+            }
+        })
+    };
+});

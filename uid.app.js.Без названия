@@ -1,0 +1,28 @@
+(function() {
+    if (!window.app) {
+        window.app = {};
+    }
+
+    if (!window.localStorage) {
+        app.uid = generateUid();
+    }
+    else if (window.localStorage.uid) {
+        app.uid = window.localStorage.uid;
+    }
+    else {
+        app.uid = generateUid();
+        window.localStorage.setItem('uid', app.uid);
+    }
+
+    function generateUid() {
+        var i,
+            text = '',
+            possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+        for (i = 30; i--;) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+
+        return text;
+    }
+}());
